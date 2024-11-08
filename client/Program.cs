@@ -98,8 +98,9 @@ void UploadToSerial(FileInfo file, string serialPortName)
     serialPort.Open();
 
     Console.WriteLine($"--file = {file}");
-    Console.WriteLine($"--port = {serialPortName}");
-    
+    Console.WriteLine($"--port = {serialPortName}");    
+    Console.WriteLine($"File size: {file.Length} bytes.");
+
     UInt16 filePosition = Convert.ToUInt16(stream.Position);
     fileDataByte = stream.ReadByte();
     while(fileDataByte > -1)
@@ -113,16 +114,16 @@ void UploadToSerial(FileInfo file, string serialPortName)
         while(serialPort.BytesToRead < RESPONSE_BUFFER_SIZE);
         
         var numberOfResponseBytes = serialPort.Read(responseBuffer, 0, RESPONSE_BUFFER_SIZE);
-        Console.WriteLine($"Command : {Convert.ToChar(writeRequestBuffer[0])}, address: {writeRequestBuffer[1]:X2}{writeRequestBuffer[2]:X2}, data: {writeRequestBuffer[3]:X2}, result: {responseBuffer[0]:X2}");
-
+        if(filePosition % 64 == 0) System.Console.Write($"\r{filePosition}/{file.Length} bytes written.");
+        
         filePosition = Convert.ToUInt16(stream.Position);
         fileDataByte = stream.ReadByte();
     }
     
     serialPort.Close();
     stream.Close();
-    Console.WriteLine();
-    Console.WriteLine($"Upload finished at {DateTime.Now}, elapsed time: {DateTime.Now - startTime}");
+    
+    Console.WriteLine($"\rUpload finished at {DateTime.Now}, elapsed time: {DateTime.Now - startTime}");
 }
 
 void VerifyFromSerial(FileInfo file, string serialPortName)
@@ -147,6 +148,7 @@ void VerifyFromSerial(FileInfo file, string serialPortName)
 
     Console.WriteLine($"--file = {file}");
     Console.WriteLine($"--port = {serialPortName}");
+    Console.WriteLine($"File size: {file.Length} bytes.");
     
     UInt16 filePosition = Convert.ToUInt16(stream.Position);
     fileDataByte = stream.ReadByte();
@@ -164,15 +166,16 @@ void VerifyFromSerial(FileInfo file, string serialPortName)
         {
             Console.WriteLine($"[FAIL] at position 0x{readRequestBuffer[1]:X2}{readRequestBuffer[2]:X2} - expected: 0x{fileDataByte:X2}, actual: 0x{responseBuffer[1]:X2}");
             verifyResult = false;
+        
         }
+        if(filePosition % 64 == 0) Console.Write($"\r{filePosition}/{file.Length} bytes verified.");
 
         filePosition = Convert.ToUInt16(stream.Position);
-        fileDataByte = verifyResult ? stream.ReadByte() : -1;
-    }
-    
+        fileDataByte = verifyResult ? stream.ReadByte() : -1;        
+    }    
     serialPort.Close();
     stream.Close();
-    Console.WriteLine();
+
     var resultString = verifyResult == true ? "SUCCEEDED" : "FAILED";
-    Console.WriteLine($"Verify {resultString} at {DateTime.Now}, elapsed time: {DateTime.Now - startTime}");
+    Console.WriteLine($"\rVerify {resultString} at {DateTime.Now}, elapsed time: {DateTime.Now - startTime}");
 }

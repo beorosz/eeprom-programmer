@@ -17,7 +17,7 @@ Response* WriteCommandHandler::Handle()
     WriteCommand writeCommand;
     Serial1.readBytes((uint8_t*)&writeCommand, sizeof(WriteCommand));    
     WriteData(writeCommand);
-    Serial.printf("Byte has been written: %02x%02x %02x\r\n", writeCommand.address_highbyte, writeCommand.address_lowbyte, writeCommand.data);
+    log_d("Byte has been written: %02x%02x %02x\r\n", writeCommand.address_highbyte, writeCommand.address_lowbyte, writeCommand.data);
 
     Response* pResponse = new Response();
     pResponse->result = W_OK;
@@ -33,7 +33,7 @@ void WriteCommandHandler::WriteData(WriteCommand writeCommand)
     digitalWrite(WRITE_ENABLE_PIN, LOW);
     SetData(writeCommand.data);
     digitalWrite(WRITE_ENABLE_PIN, HIGH);
-    delay(1);
+    delay(6);
 }
 
 void WriteCommandHandler::SetData(uint8_t data)

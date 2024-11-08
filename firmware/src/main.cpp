@@ -18,7 +18,7 @@ CommandHandlerFactory commandHandlerFactory;
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Starting up...\r\n");
+  log_i("Starting up...\r\n");
 
   pinMode(SHIFT_SERIAL_DATA_INPUT_PIN, OUTPUT);
   pinMode(SHIFT_CLOCK_PULSE_PIN, OUTPUT);

@@ -13,7 +13,7 @@ Response* ReadCommandHandler::Handle()
     ReadCommand readCommand;
     Serial1.readBytes((uint8_t*)&readCommand, sizeof(ReadCommand));
     uint8_t data = ReadData(readCommand);
-    Serial.printf("Byte has been read: %02x%02x %02x\r\n", readCommand.address_highbyte, readCommand.address_lowbyte, data);
+    log_i("Byte has been read: %02x%02x %02x\r\n", readCommand.address_highbyte, readCommand.address_lowbyte, data);
 
     ReadResponse* pResponse = new ReadResponse();
     pResponse->result = R_OK;
