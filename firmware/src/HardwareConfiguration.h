@@ -11,7 +11,7 @@
 #define WRITE_ENABLE_PIN                  9       // GPIO9
 #define OUTPUT_ENABLE_PIN                 10      // GPIO10
 #define DATA_0_PIN                        5       // GPIO5
-#define DATA_1_PIN                        4      // GPIO17
+#define DATA_1_PIN                        4       // GPIO17
 #define DATA_2_PIN                        15      // GPIO16
 #define DATA_3_PIN                        23      // GPIO23
 #define DATA_4_PIN                        22      // GPIO22

@@ -1,24 +1,33 @@
 #include "WriteCommandHandler.h"
 #include "Response.h"
 #include "WriteCommand.h"
+#include "DataLength.h"
 #include "HardwareConfiguration.h"
 
 /// @brief Handles write command. The command contains an address high and low byte, and an data byte (3 bytes total).
 /// @return S_OK if write was successful, S_FALSE otherwise.
 Response* WriteCommandHandler::Handle()
 {
-    // For a write command expect 3 bytes:
-    // - first and secord are the address bytes
-    // - third is the data byte
-    while(Serial1.available() < 3)
+    // For a write command expect
+    // - 2 bytes, representing data length    
+    while(Serial1.available() < 2)
     {
+    }    
+    DataLength dataLengthBuffer;
+    Serial1.readBytes((uint8_t*)&dataLengthBuffer, sizeof(DataLength));
+    size_t dataLength = dataLengthBuffer.address_highbyte << 8 + dataLengthBuffer.address_lowbyte;
+    // Then the rest of the firmware data
+    char* dataBuffer = (char*) malloc(dataLength * sizeof(char));    
+    size_t readDataLength = Serial1.readBytes(dataBuffer, dataLength);
+    for (size_t i = 0; i < dataLength; i++)
+    {
+        WriteCommand writeCmd;
+        writeCmd.address_highbyte = i >> 8;
+        writeCmd.address_lowbyte = i;
+        writeCmd.data = dataBuffer[i];
+        WriteData(writeCmd);
     }
-
-    WriteCommand writeCommand;
-    Serial1.readBytes((uint8_t*)&writeCommand, sizeof(WriteCommand));    
-    WriteData(writeCommand);
-    log_d("Byte has been written: %02x%02x %02x\r\n", writeCommand.address_highbyte, writeCommand.address_lowbyte, writeCommand.data);
-
+    
     Response* pResponse = new Response();
     pResponse->result = W_OK;
     
