@@ -1,0 +1,33 @@
+Page write cycle
+----------------
+
+- disable Output
+- disable Write
+- enable Chip
+
+- set Data Bus Mode to output
+- for each data byte
+    - set address
+    - write byte to data Bus
+    - delay 1 microsecond
+    - enable Write
+    - delay 1 microsecond
+    - disable Write
+
+- wait for write cycle end
+    - set data bus mode to input
+    - delay 1 microsecond
+    - repeat util the 2 read bytes below are equal AND 1st read byte equals with last written byte
+        - enable output
+        - delay 1 microsecond
+        - read data from data bus
+        - disable output
+
+        - enable output
+        - delay 1 microsecond
+        - read data from data bus
+        - disable output
+
+- disable Chip
+
+

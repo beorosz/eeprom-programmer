@@ -10,9 +10,10 @@
 #define RX_PIN                            17      // GPIO17
 #define WRITE_ENABLE_PIN                  9       // GPIO9
 #define OUTPUT_ENABLE_PIN                 10      // GPIO10
+#define CHIP_ENABLE_PIN                   12      // GPIO12
 #define DATA_0_PIN                        5       // GPIO5
 #define DATA_1_PIN                        4       // GPIO17
-#define DATA_2_PIN                        15      // GPIO16
+#define DATA_2_PIN                        15      // GPIO15
 #define DATA_3_PIN                        23      // GPIO23
 #define DATA_4_PIN                        22      // GPIO22
 #define DATA_5_PIN                        21      // GPIO21
@@ -29,6 +30,7 @@
 #define RX_PIN                            13      // GPIO13
 #define WRITE_ENABLE_PIN                  0       // GPIO??
 #define OUTPUT_ENABLE_PIN                 0       // GPIO??
+#define CHIP_ENABLE_PIN                   0       // GPIO??
 #define DATA_0_PIN                        0       // GPIO??
 #define DATA_1_PIN                        0       // GPIO??
 #define DATA_2_PIN                        0       // GPIO??
@@ -38,5 +40,7 @@
 #define DATA_6_PIN                        0       // GPIO??
 #define DATA_7_PIN                        0       // GPIO??
 #endif
+
+#define SERIAL_BUFFERSIZE                 2
 
 #endif

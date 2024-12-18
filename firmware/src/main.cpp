@@ -1,16 +1,14 @@
 #include <Arduino.h>
 
 #include "HardwareConfiguration.h"
-#include "CommandHandlerFactory.h"
-#include "CommandHandler.h"
-#include "Command.h"
-#include "ReadResponse.h"
+#include "CommandHandlers/CommandHandlerFactory.h"
+#include "CommandHandlers/CommandHandler.h"
+#include "Responses/Response.h"
 
 /**************************************/
 /*         Global variables           */
 /**************************************/
 CommandHandlerFactory commandHandlerFactory;
-
 
 /************************************/
 /*             Setup                */
@@ -25,31 +23,34 @@ void setup()
   pinMode(SHIFT_STORAGE_CLOCK_PULSE_PIN, OUTPUT);
   pinMode(OUTPUT_ENABLE_PIN, OUTPUT);
   pinMode(WRITE_ENABLE_PIN, OUTPUT);
+  pinMode(CHIP_ENABLE_PIN, OUTPUT);
 
 #ifdef ARDUINO_ESP8266_WEMOS_D1MINI
-  Serial1.begin(57600, SERIAL_8N1, SERIAL_FULL, TX_PIN);
+  Serial1.begin(115200, SERIAL_8N1, SERIAL_FULL, TX_PIN);
 #endif
 #ifdef ARDUINO_NodeMCU_32S
-  Serial1.begin(57600, SERIAL_8N1, RX_PIN, TX_PIN, false);
-#endif  
+  Serial1.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN, false);
+#endif
 }
 
-void loop() {    
-  // Wait for a command byte, telling if write or read operation is requested  
+void loop()
+{
+  // Wait for a command byte, telling the type of operation requested
   int numberOfBytesAvailable = Serial1.available();
-  if (numberOfBytesAvailable > 0)    // command byte is available
-  {    
+  if (numberOfBytesAvailable > 0) // command byte is available
+  {
     int commandByte = Serial1.read();
-    CommandHandler* pHandler = commandHandlerFactory.GetCommandHandler(commandByte);
-    Response* pResponse = pHandler->Handle();
-        
+    log_d("Command received: %c\r\n", commandByte);
+
+    CommandHandler *pHandler = commandHandlerFactory.GetCommandHandler(commandByte);
+    Response *pResponse = pHandler->Handle();
+
     Serial1.write(pResponse->result);
-    if(commandByte == 'R')
-    {      
-      ReadResponse* pReadResponse = static_cast<ReadResponse*>(pResponse);
-      Serial1.write(pReadResponse->data);
-    }
+    Serial1.write(pResponse->responseData, pResponse->responseDataSize);
+    Serial1.flush();
+
+    log_d("Response result sent: %02x\r\n", pResponse->result);
+
     delete pResponse;
   }
 }
-
