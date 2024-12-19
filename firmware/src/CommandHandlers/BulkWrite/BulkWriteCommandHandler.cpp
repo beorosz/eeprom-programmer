@@ -67,7 +67,9 @@ void BulkWriteCommandHandler::WriteData(uint8_t *pFirmwareBytes, uint16_t length
             {
                 address_highByte = (address + blockPointer) >> 8;
                 address_lowByte = (address + blockPointer) % 256;
-                data = pFirmwareBytes[address];
+                data = pFirmwareBytes[address + blockPointer];
+                
+                log_d("set - address: %02x%02x, data: %02x\r\n", address_highByte, address_lowByte, data);
                 SetAddress(address_highByte, address_lowByte);
                 SetData(data);
 
@@ -122,7 +124,7 @@ bool BulkWriteCommandHandler::WaitForWriteCycleEnd(uint8_t lastDataByteInPage)
         secondRead = ReadDataByte();
         disableOutput();
 
-        log_d("wait - address: %04x, data: %02x, firstRead: %02x, secondRead: %02x\r\n", address, data, firstRead, secondRead);
+        log_d("WaitForEndOfWriteCycle - last data byte: %02x, firstRead: %02x, secondRead: %02x\r\n", lastDataByteInPage, firstRead, secondRead);
         if ((firstRead == secondRead) && (firstRead == lastDataByteInPage))
         {
             return true;
